@@ -15,6 +15,7 @@ void MainMenu();
 void LoadGameMenu();
 void ListSavesByPlayer();
 void DawBoardWithID();
+
 void StartGame(int _loadedGame, char *_player1name, char *_player2name, int _currentPlayer, char _board[BOARDY][BOARDX]);
 void LoadGame();
 void ExitGame();
