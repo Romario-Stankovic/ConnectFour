@@ -17,7 +17,7 @@
 void MainMenu();
 void LoadGameMenu();
 void ListSavesByPlayer();
-void DawBoardWithID();
+void DrawBoardWithID();
 void LoadGame();
 
 void StartGame(int _loadedGame);
@@ -27,7 +27,7 @@ void ExitGame(int _code);
 int GameLoop();
 int CheckBoardState();
 int CheckForMatches(int _row, int _column, int _rowPattern, int _columnPattern);
-int AddChecker(int _column, char _checker);
+int AddChecker(int _column, int _checker);
 
 void ClearBoard();
 void DisplayBoard();
@@ -38,7 +38,7 @@ void SaveGame();
 int LoadData(int _mode, int _id, char *name);
 
 //Game Data
-char Board[BOARDY][BOARDX];
+int Board[BOARDY][BOARDX];
 char Player1Name[20];
 char Player2Name[20];
 int CurrentPlayer = 0;
@@ -116,7 +116,7 @@ void LoadGameMenu() {
                 break;
             case 3:
                 //Draw a board for a gmae
-                DawBoardWithID();
+                DrawBoardWithID();
                 break;
             case 4:
                 //Load a game
@@ -148,7 +148,7 @@ void ListSavesByPlayer() {
     system("pause");
 }
 
-void DawBoardWithID() {
+void DrawBoardWithID() {
     //Player input
     int id;
     //Display message
@@ -287,7 +287,7 @@ int GameLoop() {
             //Check player input
             if (choice > 0 && choice <= BOARDX) {
                 //If the input is in range of the board width, allow the input
-                if (AddChecker(choice, CurrentPlayer ? PLAYER2_CHECKER : PLAYER1_CHECKER)) {
+                if (AddChecker(choice, CurrentPlayer + 1)) {
                     //If we successfully added a checker, change the player
                     CurrentPlayer = !CurrentPlayer;
                 } else {
@@ -314,24 +314,16 @@ int GameLoop() {
 
 int CheckBoardState() {
     //Check the board for matches
-
+    int winner = 0;
     // Horizontal (-) check
     for (int i = BOARDY - 1; i >= 0; i--) {
         for (int j = 0; j <= BOARDX - MATCH_SIZE; j++) {
             //Check if there are any matches
             if (CheckForMatches(i, j, 0, 1)) {
-                //If we got a match, check which player got matched
-                if (Board[i][j] == PLAYER1_CHECKER) {
-                    //Mark the match
-                    FillInMatch(i, j, 0, 1);
-                    //Return that the 1st player won
-                    return 1;
-                } else if (Board[i][j] == PLAYER2_CHECKER) {
-                    //Mark the match
-                    FillInMatch(i, j, 0, 1);
-                    //Return that the 2nd player won
-                    return 2;
-                }
+                //If we got a match return the winner and mark the winning match
+                winner = Board[i][j];
+                FillInMatch(i, j, 0, 1);
+                return winner;
             }
             //Go to next element
         }
@@ -342,18 +334,10 @@ int CheckBoardState() {
         for (int j = 0; j < BOARDX; j++) {
             //Check if there are any matches
             if (CheckForMatches(i, j, -1, 0)) {
-                //If we got a match, check which player got matched
-                if (Board[i][j] == PLAYER1_CHECKER) {
-                    //Mark the match
-                    FillInMatch(i, j, -1, 0);
-                    //Return that the 1st player won
-                    return 1;
-                } else if (Board[i][j] == PLAYER2_CHECKER) {
-                    //Mark the match
-                    FillInMatch(i, j, -1, 0);
-                    //Return that the 2nd player won
-                    return 2;
-                }
+                //If we got a match return the winner and mark the winning match
+                winner = Board[i][j];
+                FillInMatch(i, j, -1, 0);
+                return winner;
             }
             //Go to next element
         }
@@ -364,18 +348,10 @@ int CheckBoardState() {
         for (int j = 0; j <= BOARDX - MATCH_SIZE; j++) {
             //Check if there are any matches
             if (CheckForMatches(i, j, -1, 1)) {
-                //If we got a match, check which player got matched
-                if (Board[i][j] == PLAYER1_CHECKER) {
-                    //Mark the match
-                    FillInMatch(i, j, -1, 1);
-                    //Return that the 1st player won
-                    return 1;
-                } else if (Board[i][j] == PLAYER2_CHECKER) {
-                    //Mark the match
-                    FillInMatch(i, j, -1, 1);
-                    //Return that the 2nd player won
-                    return 2;
-                }
+                //If we got a match return the winner and mark the winning match
+                winner = Board[i][j];
+                FillInMatch(i, j, -1, 1);
+                return winner;
             }
             //Go to next element
         }
@@ -386,18 +362,10 @@ int CheckBoardState() {
         for (int j = BOARDX - 1; j >= (MATCH_SIZE - 1); j--) {
             //Check if there are any matches
             if (CheckForMatches(i, j, -1, -1)) {
-                //If we got a match, check which player got matched
-                if (Board[i][j] == PLAYER1_CHECKER) {
-                    //Mark the match
-                    FillInMatch(i, j, -1, -1);
-                    //Return that the 1st player won
-                    return 1;
-                } else if (Board[i][j] == PLAYER2_CHECKER) {
-                    //Mark the match
-                    FillInMatch(i, j, -1, -1);
-                    //Return that the 2nd player won
-                    return 2;
-                }
+                //If we got a match return the winner and mark the winning match
+                winner = Board[i][j];
+                FillInMatch(i, j, -1, -1);
+                return winner;
             }
             //Go to next element
         }
@@ -407,7 +375,7 @@ int CheckBoardState() {
     int checkerCount = 0;
     for (int i = 0; i < BOARDY; i++) {
         for (int j = 0; j < BOARDX; j++) {
-            if (Board[i][j] == PLAYER1_CHECKER || Board[i][j] == PLAYER2_CHECKER) {
+            if (Board[i][j] == 1 || Board[i][j] == 2) {
                 //Count the amount of checkers in the board
                 checkerCount++;
             }
@@ -417,10 +385,12 @@ int CheckBoardState() {
     if (checkerCount == BOARDX * BOARDY) {
         //If the amount of checkers in the board matches the amount of elements the board has
         //Return 3 which means none of the players won the game
-        return 3;
+        winner = 3;
+    }else{
+        winner = 0;
     }
     //If none of the players won and the board is not filled up, return 0 which means that the game carries on
-    return 0;
+    return winner;
 }
 
 int CheckForMatches(int _row, int _column, int _rowPattern, int _columnPattern) {
@@ -448,7 +418,7 @@ int CheckForMatches(int _row, int _column, int _rowPattern, int _columnPattern) 
     return 0;
 }
 
-int AddChecker(int _column, char _checker) {
+int AddChecker(int _column, int _checker) {
     //Count for amount of checkers in the column
     int fillCheck = 0;
     //Loop through elements vertically
@@ -497,7 +467,13 @@ void DisplayBoard() {
             //Draw the elements
             if (Board[i][j] != 0) {
                 //Draw checker if the element is not empty
-                printf(" %c ", Board[i][j]);
+                if(Board[i][j] == 1){
+                    printf(" %c ", PLAYER1_CHECKER);
+                }else if(Board[i][j] == 2){
+                    printf(" %c ", PLAYER2_CHECKER);
+                }else if(Board[i][j] == 3){
+                    printf(" %c ", WINNER_HIGHLIGHT);
+                }
             } else {
                 //Draw a empty slot if the element is empty
                 printf("   ");
@@ -521,7 +497,7 @@ void FillInMatch(int _row, int _column, int _rowPattern, int _columnPattern) {
     //Based on the starting element and pattern, loop throught the match size and set 
     //every element to Y, marking the winner match
     for (int i = 0; i < MATCH_SIZE; i++) {
-        Board[_row + _rowPattern * i][_column + _columnPattern * i] = WINNER_HIGHLIGHT;
+        Board[_row + _rowPattern * i][_column + _columnPattern * i] = 3;
     }
 }
 
@@ -624,7 +600,7 @@ int LoadData(int _mode, int _id, char *_name) {
                         break;
                     default:
                         //Read board data (convert sequence to 2d array)
-                        Board[(tokenIndex - 4) / BOARDX][(tokenIndex - 4) % BOARDX] = (char)atoi(token);
+                        Board[(tokenIndex - 4) / BOARDX][(tokenIndex - 4) % BOARDX] = atoi(token);
                         break;
                 }
                 //Go to next token
