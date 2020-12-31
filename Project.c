@@ -1,10 +1,10 @@
-#include <dirent.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
 #define BOARDX 7
 #define BOARDY 6
+#define MATCH_SIZE 4
 
 #define PLAYER1_CHECKER 'X'
 #define PLAYER2_CHECKER 'O'
@@ -22,6 +22,7 @@ void ExitGame();
 //Game Logic
 int GameLoop(char *_player1name, char *_player2name, int _currentPlayer, char _board[BOARDY][BOARDX]);
 int CheckBoardState(char _board[BOARDY][BOARDX]);
+int CheckForMatches(char _board[BOARDY][BOARDX], int _row, int _column, int _rowPattern, int _columnPattern);
 int AddChecker(char _board[BOARDY][BOARDX], int _column, char _checker);
 void ClearBoard(char _board[BOARDY][BOARDX]);
 void DisplayBoard(char _board[BOARDY][BOARDX]);
@@ -271,33 +272,28 @@ int GameLoop(char *_player1name, char *_player2name, int _currentPlayer, char _b
 }
 
 int CheckBoardState(char _board[BOARDY][BOARDX]) {
-    int checkerCount = 0;
 
     // Horizontal (-) check
     for (int i = BOARDY - 1; i >= 0; i--) {
         for (int j = 0; j <= BOARDX - 4; j++) {
-            if (_board[i][j] == 0 || _board[i][j + 1] == 0 || _board[i][j + 2] == 0 || _board[i][j + 3] == 0) {
-                continue;
-            } else if (_board[i][j] == PLAYER1_CHECKER && _board[i][j + 1] == PLAYER1_CHECKER && _board[i][j + 2] == PLAYER1_CHECKER && _board[i][j + 3] == PLAYER1_CHECKER) {
-                FillInMatch(&_board[i][j], &_board[i][j + 1], &_board[i][j + 2], &_board[i][j + 3]);
-                return 1;
-            } else if (_board[i][j] == PLAYER2_CHECKER && _board[i][j + 1] == PLAYER2_CHECKER && _board[i][j + 2] == PLAYER2_CHECKER && _board[i][j + 3] == PLAYER2_CHECKER) {
-                FillInMatch(&_board[i][j], &_board[i][j + 1], &_board[i][j + 2], &_board[i][j + 3]);
-                return 2;
+            if (CheckForMatches(_board, i, j, 0, 1)) {
+                if (_board[i][j] == 'X') {
+                    return 1;
+                } else if (_board[i][j] == 'O') {
+                    return 2;
+                }
             }
         }
     }
     // Vertical (|) check
     for (int i = BOARDY - 1; i >= 3; i--) {
         for (int j = 0; j < BOARDX; j++) {
-            if (_board[i][j] == 0 || _board[i - 1][j] == 0 || _board[i - 2][j] == 0 || _board[i - 3][j] == 0) {
-                continue;
-            } else if (_board[i][j] == PLAYER1_CHECKER && _board[i - 1][j] == PLAYER1_CHECKER && _board[i - 2][j] == PLAYER1_CHECKER && _board[i - 3][j] == PLAYER1_CHECKER) {
-                FillInMatch(&_board[i][j], &_board[i - 1][j], &_board[i - 2][j], &_board[i - 3][j]);
-                return 1;
-            } else if (_board[i][j] == PLAYER2_CHECKER && _board[i - 1][j] == PLAYER2_CHECKER && _board[i - 2][j] == PLAYER2_CHECKER && _board[i - 3][j] == PLAYER2_CHECKER) {
-                FillInMatch(&_board[i][j], &_board[i - 1][j], &_board[i - 2][j], &_board[i - 3][j]);
-                return 2;
+            if (CheckForMatches(_board, i, j, -1, 0)) {
+                if (_board[i][j] == 'X') {
+                    return 1;
+                } else if (_board[i][j] == 'O') {
+                    return 2;
+                }
             }
         }
     }
@@ -305,31 +301,29 @@ int CheckBoardState(char _board[BOARDY][BOARDX]) {
 
     for (int i = BOARDY - 1; i >= 3; i--) {
         for (int j = 0; j <= BOARDX - 4; j++) {
-            if (_board[i][j] == 0 || _board[i - 1][j + 1] == 0 || _board[i - 2][j + 2] == 0 || _board[i - 3][j + 3] == 0) {
-                continue;
-            } else if (_board[i][j] == PLAYER1_CHECKER && _board[i - 1][j + 1] == PLAYER1_CHECKER && _board[i - 2][j + 2] == PLAYER1_CHECKER && _board[i - 3][j + 3] == PLAYER1_CHECKER) {
-                FillInMatch(&_board[i][j], &_board[i - 1][j + 1], &_board[i - 2][j + 2], &_board[i - 3][j + 3]);
-                return 1;
-            } else if (_board[i][j] == PLAYER2_CHECKER && _board[i - 1][j + 1] == PLAYER2_CHECKER && _board[i - 2][j + 2] == PLAYER2_CHECKER && _board[i - 3][j + 3] == PLAYER2_CHECKER) {
-                FillInMatch(&_board[i][j], &_board[i - 1][j + 1], &_board[i - 2][j + 2], &_board[i - 3][j + 3]);
-                return 2;
+            if (CheckForMatches(_board, i, j, -1, 1)) {
+                if (_board[i][j] == 'X') {
+                    return 1;
+                } else if (_board[i][j] == 'O') {
+                    return 2;
+                }
             }
         }
     }
     // Diagonal (\) check
     for (int i = BOARDY - 1; i >= 3; i--) {
         for (int j = BOARDX - 1; j >= 3; j--) {
-            if (_board[i][j] == 0 || _board[i - 1][j - 1] == 0 || _board[i - 2][j - 2] == 0 || _board[i - 3][j - 3] == 0) {
-                continue;
-            } else if (_board[i][j] == PLAYER1_CHECKER && _board[i - 1][j - 1] == PLAYER1_CHECKER && _board[i - 2][j - 2] == PLAYER1_CHECKER && _board[i - 3][j - 3] == PLAYER1_CHECKER) {
-                FillInMatch(&_board[i][j], &_board[i - 1][j - 1], &_board[i - 2][j - 2], &_board[i - 3][j - 3]);
-                return 1;
-            } else if (_board[i][j] == PLAYER2_CHECKER && _board[i - 1][j - 1] == PLAYER2_CHECKER && _board[i - 2][j - 2] == PLAYER2_CHECKER && _board[i - 3][j - 3] == PLAYER2_CHECKER) {
-                FillInMatch(&_board[i][j], &_board[i - 1][j - 1], &_board[i - 2][j - 2], &_board[i - 3][j - 3]);
-                return 2;
+            if (CheckForMatches(_board, i, j, -1, -1)) {
+                if (_board[i][j] == 'X') {
+                    return 1;
+                } else if (_board[i][j] == 'O') {
+                    return 2;
+                }
             }
         }
     }
+
+    int checkerCount = 0;
 
     for (int i = 0; i < BOARDY; i++) {
         for (int j = 0; j < BOARDX; j++) {
@@ -343,6 +337,21 @@ int CheckBoardState(char _board[BOARDY][BOARDX]) {
         return 3;
     }
 
+    return 0;
+}
+
+int CheckForMatches(char _board[BOARDY][BOARDX], int _row, int _column, int _rowPattern, int _columnPattern){
+    int matches = 0;
+    for(int i=0; i<MATCH_SIZE; i++){
+        if(_board[_row + _rowPattern * i][_column + _columnPattern * i] == 0){
+            return 0;
+        }else if(_board[_row + _rowPattern * i][_column + _columnPattern * i] == _board[_row][_column]){
+            matches++;
+        }
+    }
+    if(matches == MATCH_SIZE){
+        return 1;
+    }
     return 0;
 }
 
