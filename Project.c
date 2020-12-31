@@ -37,7 +37,8 @@ void FillInMatch(int _row, int _column, int _rowPattern, int _columnPattern);
 void SaveGame();
 int LoadData(int _mode, int _id, char *name);
 
-//Game Data
+//Game Data---------------------------------------------------------------------
+
 int Board[BOARDY][BOARDX];
 char Player1Name[20];
 char Player2Name[20];
