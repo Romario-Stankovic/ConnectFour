@@ -205,7 +205,7 @@ void StartGame(int _loadedGame) {
         CurrentPlayer = 0;
     }
     //Start the game loop and repeat until the game result is not 0 (exit)
-    do {
+    while(1){
         if (!_loadedGame) {
             //If we did not load the game, clear the board of any previous data and set the first player
             ClearBoard(Board);
@@ -232,7 +232,7 @@ void StartGame(int _loadedGame) {
             printf("No one won :(\n");
             system("pause");
         } else {
-            //If we get anything other than 1,2 or 3, break out of the loop
+            //If we get anything other than 1,2 or 3, break out of the loop, returning us to the main menu
             break;
         }
         
@@ -252,10 +252,10 @@ void StartGame(int _loadedGame) {
             //If the player choose 1, repeat the game loop
             continue;
         } else {
-            //If the player choose 0, set the result to 0 and stop the game loop
-            result = 0;
+            //If the player choose 0,break and return to main menu
+            break;
         }
-    } while (result != 0);
+    }
 }
 
 void ExitGame(int _code) {
@@ -437,7 +437,7 @@ int AddChecker(int _column, int _checker) {
 
     if (fillCheck == BOARDY) {
         //If we have the same amount of elements as the height of the board, return 0
-        //meaning that we can't add a checker
+        //meaning that we can't add a checker in this column
         return 0;
     }
 }
@@ -572,9 +572,11 @@ int LoadData(int _mode, int _id, char *_name) {
         //Read through file lines, storing the data into line[] and allow a max of 256 characters to be read
         while (fgets(line, sizeof(line), file)) {
             //Clear any previous data we might have when reading a new line
-            ClearBoard();
+            id = 0;
             strcpy(Player1Name, "");
             strcpy(Player2Name, "");
+            CurrentPlayer = 0;
+            ClearBoard();
             //Set the token index so we know which element are we reading
             tokenIndex = 0;
             //Split the line into tokens
@@ -608,6 +610,14 @@ int LoadData(int _mode, int _id, char *_name) {
                 token = strtok(NULL, ",");
                 tokenIndex++;
             }
+
+            if(tokenIndex != (BOARDX * BOARDY) + 4){
+                //If data does not match the format we are looking for:
+                //(ID, Player 1 Name, Player 2 Name, Current Player, Number of elements equal to board size)
+                //skip this save
+                continue;
+            }
+
             //When we read through all of the tokens, count how many empty slots we have in our board (if we need to display them)
             emptySlots = 0;
             for (int i = 0; i < BOARDY; i++) {
@@ -621,6 +631,7 @@ int LoadData(int _mode, int _id, char *_name) {
             switch (_mode) {
                 case 0:
                     //Mode 0 returns 1 if the current loaded save matches our search
+                    //The data remains in the global variables, and we start a game using it
                     if (id == _id) {
                         fclose(file);
                         return 1;
@@ -654,7 +665,7 @@ int LoadData(int _mode, int _id, char *_name) {
         }
         //When we looped through all of the lines, close the file
         fclose(file);
-        //If we displayed any messages, return 1 meaning that got results
+        //If we displayed any messages, return 1 meaning that we got results
         if (displayedSaves != 0) {
             return 1;
         }
