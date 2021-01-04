@@ -420,8 +420,6 @@ int CheckForMatches(int _row, int _column, int _rowPattern, int _columnPattern) 
 }
 
 int AddChecker(int _column, int _checker) {
-    //Count for amount of checkers in the column
-    int fillCheck = 0;
     //Loop through elements vertically
     for (int i = BOARDY - 1; i >= 0; i--) {
         if (Board[i][_column - 1] == 0) {
@@ -429,17 +427,11 @@ int AddChecker(int _column, int _checker) {
             Board[i][_column - 1] = _checker;
             //Return 1 meaning we successfully added a checker
             return 1;
-        } else {
-            //If we did not find an empty slot, count how many elements we have
-            fillCheck++;
         }
     }
-
-    if (fillCheck == BOARDY) {
-        //If we have the same amount of elements as the height of the board, return 0
-        //meaning that we can't add a checker in this column
-        return 0;
-    }
+    //If we did not exit the funtion with 1 during the for loop, exit with 0
+    //meaning that we can't add a checker in this column
+    return 0;
 }
 
 void ClearBoard() {
@@ -466,24 +458,26 @@ void DisplayBoard() {
         //Loop through columns
         for (int j = 0; j < BOARDX; j++) {
             //Draw the elements
-            if (Board[i][j] != 0) {
-                //Draw checker if the element is not empty
-                if(Board[i][j] == 1){
-                    printf(" %c ", PLAYER1_CHECKER);
-                }else if(Board[i][j] == 2){
-                    printf(" %c ", PLAYER2_CHECKER);
-                }else if(Board[i][j] == 3){
-                    printf(" %c ", WINNER_HIGHLIGHT);
-                }
-            } else {
-                //Draw a empty slot if the element is empty
+            switch (Board[i][j]){
+                case 1: 
+                printf(" %c ", PLAYER1_CHECKER);
+                break;
+                case 2:
+                printf(" %c ", PLAYER2_CHECKER);
+                break;
+                case 3:
+                printf(" %c ", WINNER_HIGHLIGHT);
+                break;
+                default:
                 printf("   ");
+                break;
             }
             //End a column
             printf("|");
         }
         //Go to new line
         printf("\n");
+        //Repeat until every cell is drawn
     }
 
     //When every element is drawn, draw the bottom line
@@ -617,6 +611,8 @@ int LoadData(int _mode, int _id, char *_name) {
                 //skip this save
                 continue;
             }
+            // ^ This is a simple safeguard that checks if the data matches a format the programs expects it in, if not, discard the read data
+            // Not a full proof 
 
             //When we read through all of the tokens, count how many empty slots we have in our board (if we need to display them)
             emptySlots = 0;
