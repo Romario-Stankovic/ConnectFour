@@ -229,7 +229,7 @@ void StartGame(int _loadedGame) {
             system("pause");
         } else if (result == 3) {
             //If the result is 3, None of the players won
-            printf("No one won :(\n");
+            printf("No one wins\n");
             system("pause");
         } else {
             //If we get anything other than 1,2 or 3, break out of the loop, returning us to the main menu
