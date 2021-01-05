@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdbool.h>
 
 //Defines----------------------------------------------------------------------
 #define BOARDX 7
@@ -10,6 +11,7 @@
 #define PLAYER1_CHECKER 'X'
 #define PLAYER2_CHECKER 'O'
 #define WINNER_HIGHLIGHT 'Y'
+#define SAVE_FILE_NAME "result.txt"
 
 //Functions---------------------------------------------------------------------
 
@@ -20,14 +22,14 @@ void ListSavesByPlayer();
 void DrawBoardWithID();
 void LoadGame();
 
-void StartGame(int _loadedGame);
+void StartGame(bool _loadedGame);
 void ExitGame(int _code);
 
 //Game Logic
 int GameLoop();
 int CheckBoardState();
-int CheckForMatches(int _row, int _column, int _rowPattern, int _columnPattern);
-int AddChecker(int _column, int _checker);
+bool CheckForMatches(int _row, int _column, int _rowPattern, int _columnPattern);
+bool AddChecker(int _column, int _checker);
 
 void ClearBoard();
 void DisplayBoard();
@@ -35,7 +37,7 @@ void FillInMatch(int _row, int _column, int _rowPattern, int _columnPattern);
 
 //Other
 void SaveGame();
-int LoadData(int _mode, int _id, char *name);
+bool LoadData(int _mode, int _id, char *name);
 
 //Game Data---------------------------------------------------------------------
 
@@ -56,7 +58,7 @@ int main() {
 void MainMenu() {
     //Player input
     int choice;
-    while (1) {
+    while (true) {
         //Display menu (Repeat if input does not match)
         system("cls");
         printf("\t --MAIN MENU-- \n");
@@ -70,7 +72,7 @@ void MainMenu() {
         switch (choice) {
             case 1:
                 //Start a game
-                StartGame(0);
+                StartGame(false);
                 break;
             case 2:
                 //Open Load menu
@@ -88,7 +90,7 @@ void LoadGameMenu() {
     //Player input
     int choice;
     //Display menu (Repeat if input does not match)
-    while (1) {
+    while (true) {
         system("cls");
         printf("\t --LOAD GAME-- \n");
         printf("1) List all saved games\n");
@@ -185,11 +187,11 @@ void LoadGame() {
         printf("There are no saves with said ID\n");
         system("pause");
     } else {
-        StartGame(1);
+        StartGame(true);
     }
 }
 
-void StartGame(int _loadedGame) {
+void StartGame(bool _loadedGame) {
     //Game result
     int result = 0;
     //Player input
@@ -205,15 +207,15 @@ void StartGame(int _loadedGame) {
         CurrentPlayer = 0;
     }
     //Start the game loop and repeat until the game result is not 0 (exit)
-    while(1){
+    while (true) {
         if (!_loadedGame) {
             //If we did not load the game, clear the board of any previous data and set the first player
             ClearBoard(Board);
             CurrentPlayer = 0;
         } else {
             //If we loaded a game, do nothing (because the data is loaded from the save)
-            // And set _loadedGame to 0 for the next do iteration
-            _loadedGame = 0;
+            // And set _loadedGame to false for the next do iteration
+            _loadedGame = false;
         }
         
         //Get the result form the GameLoop
@@ -272,7 +274,7 @@ int GameLoop() {
     int choice;
     //Board check
     int check = 0;
-    while (1) {
+    while (true) {
         system("cls");
         //Check the board state
         check = CheckBoardState();
@@ -310,6 +312,7 @@ int GameLoop() {
             return check;
         }
     }
+    //Failsafe if something goes wrong, return 0 stopping the game
     return 0;
 }
 
@@ -394,7 +397,7 @@ int CheckBoardState() {
     return winner;
 }
 
-int CheckForMatches(int _row, int _column, int _rowPattern, int _columnPattern) {
+bool CheckForMatches(int _row, int _column, int _rowPattern, int _columnPattern) {
     //Count the matches
     int matches = 0;
     //Loop through elements following a pattern and find if any of them match
@@ -402,36 +405,36 @@ int CheckForMatches(int _row, int _column, int _rowPattern, int _columnPattern) 
         //Check if any any of the elements are 0
         if (Board[_row + _rowPattern * i][_column + _columnPattern * i] == 0) {
             //If they are, skip this check since we know that 0 is a empty field
-            return 0;
+            return false;
         } else if (Board[_row + _rowPattern * i][_column + _columnPattern * i] == Board[_row][_column]) {
             //If the element matches the first element, count the match
             matches++;
         }else{
             //If we don't have a 0 and an element does not match the starting one, skip since we know there is no winner
-            return 0;
+            return false;
         }
     }
     if (matches == MATCH_SIZE) {
-        //If we matched MATCH_SIZE of elements, return 1 meaning there is a winner
-        return 1;
+        //If we matched MATCH_SIZE of elements, return true meaning there is a winner
+        return true;
     }
-    //If we didn't match MATCH_SIZE, return 0 meaning we did not find any winners
-    return 0;
+    //If we didn't match MATCH_SIZE, return false meaning we did not find any winners
+    return false;
 }
 
-int AddChecker(int _column, int _checker) {
+bool AddChecker(int _column, int _checker) {
     //Loop through elements vertically
     for (int i = BOARDY - 1; i >= 0; i--) {
         if (Board[i][_column - 1] == 0) {
             //If we find an empty slot, add a checker
             Board[i][_column - 1] = _checker;
-            //Return 1 meaning we successfully added a checker
-            return 1;
+            //Return true meaning we successfully added a checker
+            return true;
         }
     }
-    //If we did not exit the funtion with 1 during the for loop, exit with 0
+    //If we did not exit the funtion with 1 during the for loop, exit with false
     //meaning that we can't add a checker in this column
-    return 0;
+    return false;
 }
 
 void ClearBoard() {
@@ -507,7 +510,7 @@ void SaveGame() {
     FILE *file;
 
     //Open the file for reading only
-    file = fopen("result.txt", "r");
+    file = fopen(SAVE_FILE_NAME, "r");
     if (file) {
         //If we have a file, read through its lines, storing the data into line[]
         //and allowing a max of 256 character to be read from each line
@@ -525,7 +528,7 @@ void SaveGame() {
     }
 
     //Open the file for appending only
-    file = fopen("result.txt", "a");
+    file = fopen(SAVE_FILE_NAME, "a");
     if (file) {
         //If we have a file, write a line in it containtng our listID + 1,
         //both player names, current player and board data which is stored in sequence
@@ -539,12 +542,15 @@ void SaveGame() {
         //and close the file
         fprintf(file, "\n");
         fclose(file);
+        //Display a message to the players with the ID of the saved game
+        printf("Game saved with ID: %d\n", lastID + 1);
+    }else{
+        //Print a message if something is wrong
+        printf("There was a problem creating a save\n");
     }
-    //Display a message to the players with the ID of the saved game
-    printf("Game saved with ID: %d\n", lastID + 1);
 }
 
-int LoadData(int _mode, int _id, char *_name) {
+bool LoadData(int _mode, int _id, char *_name) {
     //Modes
     // 0 - Load Data and Start Game
     // 1 - Display all saves
@@ -554,7 +560,7 @@ int LoadData(int _mode, int _id, char *_name) {
     //Pointer to our file
     FILE *file;
     //Open file for reading
-    file = fopen("result.txt", "r");
+    file = fopen(SAVE_FILE_NAME, "r");
     if (file) {
         //If we have a file, create some temp variables
         int id;
@@ -626,11 +632,11 @@ int LoadData(int _mode, int _id, char *_name) {
             //Check in which mode did we call this function
             switch (_mode) {
                 case 0:
-                    //Mode 0 returns 1 if the current loaded save matches our search
+                    //Mode 0 returns true if the current loaded save matches our search
                     //The data remains in the global variables, and we start a game using it
                     if (id == _id) {
                         fclose(file);
-                        return 1;
+                        return true;
                     }
                     break;
                 case 1:
@@ -647,29 +653,29 @@ int LoadData(int _mode, int _id, char *_name) {
                     }
                     break;
                 case 3:
-                    //Mode 3 check if any of the saves match the requested ID, draws the board of that save and returns 1
+                    //Mode 3 check if any of the saves match the requested ID, draws the board of that save and returns true
                     //meaning the save matched our search
                     if (id == _id) {
                         fclose(file);
                         printf("'%c' - %s\n", PLAYER1_CHECKER, Player1Name);
                         printf("'%c' - %s\n", PLAYER2_CHECKER, Player2Name);
                         DisplayBoard();
-                        return 1;
+                        return true;
                     }
                     break;
             }
         }
         //When we looped through all of the lines, close the file
         fclose(file);
-        //If we displayed any messages, return 1 meaning that we got results
+        //If we displayed any messages, return true meaning that we got results
         if (displayedSaves != 0) {
-            return 1;
+            return true;
         }
-        //If we did print out any saves, return 0 meaning we have no results
-        return 0;
+        //If we did print out any saves, return false meaning we have no results
+        return false;
     } else {
-        //If we don't have a file, print out a message and return 0 meaning we have no results
+        //If we don't have a file, print out a message and return false meaning we have no results
         printf("Save file does not exist\n");
-        return 0;
+        return false;
     }
 }
