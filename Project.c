@@ -720,7 +720,7 @@ void FlushInputBuffer() {
     //This function is used to clear the input buffer
     //This is a failsafe in case that the user enters a character or string using scanf in a while loop, while scanf
     //expects an integer. This will result in a loop that will not stop and not ask for input because the input buffer is not empty.
-    //Flushing the input buffer will allow scanf to being called again, stopping the loop until the user enters something
+    //Flushing the input buffer will allow scanf to be called again, stopping the loop until the user enters something
     fflush(stdin);
 }
 
