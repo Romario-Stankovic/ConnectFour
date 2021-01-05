@@ -38,8 +38,12 @@ void FillInMatch(int _row, int _column, int _rowPattern, int _columnPattern);
 //Other
 void SaveGame();
 bool LoadData(int _mode, int _id, char *name);
-void FlushInputBuffer();
+
 bool CheckForInvalidCharacters(char *string, char invalidChar);
+
+void FlushInputBuffer();
+void ClearScreen();
+void Pause();
 
 //Game Data---------------------------------------------------------------------
 
@@ -48,7 +52,11 @@ char Player1Name[20];
 char Player2Name[20];
 int CurrentPlayer = 0;
 
+
+//Program logic-----------------------------------------------------------------
+
 int main() {
+    
     MainMenu();
 
     return 0;
@@ -63,7 +71,7 @@ void MainMenu() {
         //Reset the choice, in case that the user enters bad input
         choice = 0;
         //Display menu (Repeat if input does not match)
-        system("cls");
+        ClearScreen();
         printf("\t --MAIN MENU-- \n");
         printf("1) New Game\n");
         printf("2) Load Game\n");
@@ -98,7 +106,7 @@ void LoadGameMenu() {
     while (true) {
         //Reset the choice, in case that the user enters bad input
         choice = 0;
-        system("cls");
+        ClearScreen();
         printf("\t --LOAD GAME-- \n");
         printf("1) List all saved games\n");
         printf("2) List all saved games for a particular player\n");
@@ -114,13 +122,13 @@ void LoadGameMenu() {
         switch (choice) {
             case 1:
                 //Load data and display all saves
-                system("cls");
+                ClearScreen();
                 printf("\t --ALL SAVES--\n");
                 if (!LoadData(1, 0, NULL)) {
                     //If we don't have saves, display a message
                     printf("There are no saves\n");
                 }
-                system("pause");
+                Pause();
                 break;
             case 2:
                 //Display saves for one player
@@ -145,62 +153,62 @@ void ListSavesByPlayer() {
     //Player input
     char name[20];
     //Display message
-    system("cls");
+    ClearScreen();
     printf("\t --LIST SAVES WITH-- \n");
     printf("Enter a name: ");
     //Get player input
     scanf("%s", name);
-    //clear the input buffer
+    //clear the input buffer (in case that the user enters multiple names seperated with spaces)
     FlushInputBuffer();
-    system("cls");
+    ClearScreen();
     printf("\t --LIST SAVES WITH %s-- \n", name);
     //Load data and display all saves for a player
     if (!LoadData(2, 0, name)) {
         //If we can't find the player, display a message
         printf("There are no saves with said player\n");
     }
-    system("pause");
+    Pause();
 }
 
 void DrawBoardWithID() {
     //Player input
     int id = 0;
     //Display message
-    system("cls");
+    ClearScreen();
     printf("\t --DRAW BOARD--\n");
     printf("Enter the ID of the save: ");
     //Get player input
     scanf("%d", &id);
     //clear the input buffer in case of bad input
     FlushInputBuffer();
-    system("cls");
+    ClearScreen();
     printf("\t --DRAW BOARD %d--\n", id);
     //Load data and display a board
     if (!LoadData(3, id, NULL)) {
         //If we can't find the save, display a message
         printf("There are no saves with said ID\n");
     }
-    system("pause");
+    Pause();
 }
 
 void LoadGame() {
     //Player input
     int id = 0;
     //Display message
-    system("cls");
+    ClearScreen();
     printf("\t --LOAD GAME--\n");
     printf("Enter the ID of the save: ");
     //Get player input
     scanf("%d", &id);
     //clear the input buffer in case of bad input
     FlushInputBuffer();
-    system("cls");
+    ClearScreen();
     printf("\t --LOAD GAME--\n");
     //Load data and Start the game
     if (!LoadData(0, id, NULL)) {
         //If we can't find the save, display a message
         printf("There are no saves with said ID\n");
-        system("pause");
+        Pause();
     } else {
         StartGame(true);
     }
@@ -211,32 +219,31 @@ void StartGame(bool _loadedGame) {
     int result = 0;
     //Player input
     int choice = 0;
-    system("cls");
+    ClearScreen();
     //If we did not load a game, ask the player to enter player names and set the first player
     if (!_loadedGame) {
-        //Repeat name input if the user enters an invalid character
+        //Repeat name input if the user enters an invalid character (',' since it is used in the save file to separate data)
         do {
-            system("cls");
+            ClearScreen();
             printf("\t --NEW GAME--\n");
             printf("Enter the name of Player 1: ");
             scanf("%s", Player1Name);
-            //clear the input buffer just in case
+            //clear the input buffer (in case that the user enters multiple names separated with spaces)
             FlushInputBuffer();
         } while (CheckForInvalidCharacters(Player1Name, ','));
         do {
-            system("cls");
+            ClearScreen();
             printf("\t --NEW GAME--\n");
             printf("Enter the name of Player 2: ");
             scanf("%s", Player2Name);
-            //clear the input buffer just in case
+            //clear the input buffer (in case that the user enters multiple names separated with spaces)
             FlushInputBuffer();
         } while (CheckForInvalidCharacters(Player2Name, ','));
-        CurrentPlayer = 0;
     }
     //Start the game loop and repeat until the game result is not 0 (exit)
     while (true) {
         if (!_loadedGame) {
-            //If we did not load the game, clear the board of any previous data and set the first player
+            //If we did not load the game, clear the board of any previous data and set the first player to Player 1
             ClearBoard(Board);
             CurrentPlayer = 0;
         } else {
@@ -251,15 +258,15 @@ void StartGame(bool _loadedGame) {
         if (result == 1) {
             //If the result is 1, Player 1 won the game
             printf("%s wins!\n", Player1Name);
-            system("pause");
+            Pause();
         } else if (result == 2) {
             //If the result is 2, Player2 won the game
             printf("%s wins!\n", Player2Name);
-            system("pause");
+            Pause();
         } else if (result == 3) {
             //If the result is 3, None of the players won
             printf("No one wins\n");
-            system("pause");
+            Pause();
         } else {
             //If we get anything other than 1,2 or 3, break out of the loop, returning us to the main menu
             break;
@@ -270,7 +277,7 @@ void StartGame(bool _loadedGame) {
             //Reset the choice, in case that the user enters bad input
             choice = 0;
             //Print out a message
-            system("cls");
+            ClearScreen();
             printf("What do you want to do next?\n");
             printf("1) Play Again\n");
             printf("2) Return to Main Menu\n");
@@ -307,8 +314,8 @@ int GameLoop() {
     //Board check
     int check = 0;
     while (true) {
-        system("cls");
-        //Check the board state
+        ClearScreen();
+        //Check the board state before printing it
         check = CheckBoardState();
         //Display the board
         DisplayBoard();
@@ -332,16 +339,16 @@ int GameLoop() {
                 } else {
                     //If we did not add a checker, display that the column is full
                     printf("Column %d is full, please select a different column\n", choice);
-                    system("pause");
+                    Pause();
                 }
             } else if (choice == 0) {
                 //If the input is 0, that means the current player saves the game
                 SaveGame();
-                system("pause");
+                Pause();
             } else {
                 //If the input was not 0, nor in range of the board, the player made an invalid choice
                 printf("Invalid choice\n");
-                system("pause");
+                Pause();
             }
         } else {
             //If our check returns anything other than 0, that means the game came to an end and pass that value back to StartGame
@@ -427,9 +434,10 @@ int CheckBoardState() {
         //Return 3 which means none of the players won the game
         winner = 3;
     } else {
+        //If the board is not full, and we have no winners, continue the game
         winner = 0;
     }
-    //If none of the players won and the board is not filled up, return 0 which means that the game carries on
+    //return winner value
     return winner;
 }
 
@@ -654,7 +662,7 @@ bool LoadData(int _mode, int _id, char *_name) {
                 continue;
             }
             // ^ This is a simple safeguard that checks if the data matches a format the programs expects it in, if not, discard the read data
-            // Not a full proof
+            // Not a foolproof method since we are saving in a .txt file, but better anything than nothing (〜￣▽￣)〜
 
             //When we read through all of the tokens, count how many empty slots we have in our board (if we need to display them)
             emptySlots = 0;
@@ -716,14 +724,6 @@ bool LoadData(int _mode, int _id, char *_name) {
     }
 }
 
-void FlushInputBuffer() {
-    //This function is used to clear the input buffer
-    //This is a failsafe in case that the user enters a character or string using scanf in a while loop, while scanf
-    //expects an integer. This will result in a loop that will not stop and not ask for input because the input buffer is not empty.
-    //Flushing the input buffer will allow scanf to be called again, stopping the loop until the user enters something
-    fflush(stdin);
-}
-
 bool CheckForInvalidCharacters(char *string, char invalidChar){
     //This function checks each element of the string and returns true if we have an invalid character
     for(int i=0; i<strlen(string); i++){
@@ -733,4 +733,35 @@ bool CheckForInvalidCharacters(char *string, char invalidChar){
     }
     //Otherwise, return false meaning we do not have invalid characters
     return false;
+}
+
+void FlushInputBuffer() {
+    //This function is used to clear the input buffer
+    //This is a failsafe in case that the user enters a character or string using scanf in a while loop, while scanf
+    //expects an integer. This will result in a loop that will not stop and not ask for input because the input buffer is not empty.
+    //Flushing the input buffer will allow scanf to be called again, stopping the loop until the user enters something
+    fflush(stdin);
+}
+
+void ClearScreen(){
+    //Use compiler macros to check on which OS we are and use the corresponding system call to clear the screen.
+    //Calling system functions is bad since we do not know on which OS this code will be compiled and run on,
+    //but there is no pretty solution for this, so... ¯\_(ツ)_/¯
+    #if defined(__linux__) || defined(__unix__) || defined(__APPLE__)
+    system("clear");
+    #endif
+
+    #if defined(_WIN32) || defined(_WIN64)
+    system("cls");
+    #endif
+    
+}
+
+void Pause(){
+    //Print out a message to the user
+    printf("Press ENTER to continue...");
+    //Read a character and enter it into input buffer, function returns when we press Enter/Return
+    getchar();
+    //Clear the buffer if the user entered anything before hitting ENTER before continuing
+    FlushInputBuffer();
 }
