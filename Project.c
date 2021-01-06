@@ -1,6 +1,6 @@
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdbool.h>
 #include <string.h>
 
 //Defines----------------------------------------------------------------------
@@ -52,11 +52,9 @@ char Player1Name[20];
 char Player2Name[20];
 int CurrentPlayer = 0;
 
-
 //Program logic-----------------------------------------------------------------
 
 int main() {
-    
     MainMenu();
 
     return 0;
@@ -724,10 +722,10 @@ bool LoadData(int _mode, int _id, char *_name) {
     }
 }
 
-bool CheckForInvalidCharacters(char *string, char invalidChar){
+bool CheckForInvalidCharacters(char *string, char invalidChar) {
     //This function checks each element of the string and returns true if we have an invalid character
-    for(int i=0; i<strlen(string); i++){
-        if(string[i] == invalidChar){
+    for (int i = 0; i < strlen(string); i++) {
+        if (string[i] == invalidChar) {
             return true;
         }
     }
@@ -736,21 +734,31 @@ bool CheckForInvalidCharacters(char *string, char invalidChar){
 }
 
 void FlushInputBuffer() {
-    //This function is used to clear the input buffer
-    //This is a failsafe in case that the user enters a character or string using scanf in a while loop, while scanf
-    //expects an integer. This will result in a loop that will not stop and not ask for input because the input buffer is not empty.
-    //Flushing the input buffer will allow scanf to be called again, stopping the loop until the user enters something
-    //This is bad for cross-platform applications
-    fflush(stdin);
+    //This function is used as a failsafe in case the user enters bad input, or multiple
+    //inputs (strings) separated with spaces, which will store the next string in the buffer
+    //and it will be passed to the next scanf that reads user input, which we do not want.
+    int c;
+    do {
+        //Read the character from the input buffer (if any)
+        c = getchar();
+    } while (c != '\n' && c != EOF);
+    //Repeat the read until we hit a new line or End Of File
 }
 
-//Functions to clear the screen and pause the process. This is bad practice since system calls are OS specific
-//meaning that we limit our code to only one OS type. To make the code work on multiple platforms, change these functions
-//to something that works for them and compile the code again... oh well ¯\_(ツ)_/¯
-void ClearScreen(){
+void ClearScreen() {
+    //Use macros to check on which OS we are on and use the corresponding system call
+    //to clear the screen. System calls are bad, macros are bad, oh well... ¯\_(ツ)_/¯
+#if defined(_WIN32) || defined(_WIN64)
     system("cls");
+#else
+    system("clear");
+#endif
 }
 
-void Pause(){
-    system("pause");
+void Pause() {
+    //Print out a message to the user
+    printf("Press ENTER to continue...");
+    //Flush the input buffer, this will wait for user input since we do not have any
+    //(if we flushed every other input before this one, which should be the case)
+    FlushInputBuffer();
 }
