@@ -740,28 +740,17 @@ void FlushInputBuffer() {
     //This is a failsafe in case that the user enters a character or string using scanf in a while loop, while scanf
     //expects an integer. This will result in a loop that will not stop and not ask for input because the input buffer is not empty.
     //Flushing the input buffer will allow scanf to be called again, stopping the loop until the user enters something
+    //This is bad for cross-platform applications
     fflush(stdin);
 }
 
+//Functions to clear the screen and pause the process. This is bad practice since system calls are OS specific
+//meaning that we limit our code to only one OS type. To make the code work on multiple platforms, change these functions
+//to something that works for them and compile the code again... oh well ¯\_(ツ)_/¯
 void ClearScreen(){
-    //Use compiler macros to check on which OS we are and use the corresponding system call to clear the screen.
-    //Calling system functions is bad since we do not know on which OS this code will be compiled and run on,
-    //but there is no pretty solution for this, so... ¯\_(ツ)_/¯
-    #if defined(__linux__) || defined(__unix__) || defined(__APPLE__)
-    system("clear");
-    #endif
-
-    #if defined(_WIN32) || defined(_WIN64)
     system("cls");
-    #endif
-    
 }
 
 void Pause(){
-    //Print out a message to the user
-    printf("Press ENTER to continue...");
-    //Read a character and enter it into input buffer, function returns when we press Enter/Return
-    getchar();
-    //Clear the buffer if the user entered anything before hitting ENTER before continuing
-    FlushInputBuffer();
+    system("pause");
 }
