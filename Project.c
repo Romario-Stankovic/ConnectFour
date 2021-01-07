@@ -683,14 +683,14 @@ bool LoadData(int _mode, int _id, char *_name) {
                     break;
                 case 1:
                     //Mode 1 prints out all the saves we have and counts how many it printed out
-                    printf("%d,%s,%s,%d\n", id, Player1Name, Player2Name, emptySlots);
+                    printf("%d, %s, %s, %d\n", id, Player1Name, Player2Name, emptySlots);
                     displayedSaves++;
                     break;
                 case 2:
                     //Mode 2 check if any of the loaded players match with the search, and prints out only those saves
                     //It also counts how many it printed out
                     if (strcmp(_name, Player1Name) == 0 || strcmp(_name, Player2Name) == 0) {
-                        printf("%d,%s,%s,%d\n", id, Player1Name, Player2Name, emptySlots);
+                        printf("%d, %s, %s, %d\n", id, Player1Name, Player2Name, emptySlots);
                         displayedSaves++;
                     }
                     break;
