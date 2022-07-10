@@ -1,21 +1,32 @@
-# Description
+<h1 align="center">Connect Four</h1>
 
-Connect four game build using the C programming language. This project was given as a final project for "Principles of Computer Programming" at Singidunum University.
+Connect four game built using the C programming language. It was given as a final project for "Principles of Computer Programming" at Singidunum University.
 
-The project features:
-- Full connect four game
+## 💡 Features
+
+The project contains the following features
+
+- Base game with 2 player support
 - Save/Load system
 - Menu
 
-# Languages & Tools
+## 🧰 Languages & Tools
 
-<p>
-  <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/c/c-original.svg" width=25 alt="C">
-</p>
+  <a href="https://code.visualstudio.com/"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/vscode/vscode-original.svg" width="30px" alt="VSCode"></a>
+  <a href="#"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/c/c-original.svg" width="30px" alt="C"></a>
 
-# Quick Start
+## ⚡ Getting Started
 
-1. Download a C/C++ Compiler (GCC or MinGW)
-2. Clone the repository
-3. Compile the project
-4. Enjoy :)
+Requirements:
+
+- C/C++ compiler
+
+Guide:
+
+1. Compile the file
+2. Run the output
+3. Enjoy :)
+
+## ⚖ License
+
+This repository is not under any license. Normal copyright laws apply!
