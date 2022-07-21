@@ -37,7 +37,7 @@ The game had to be fully playable between two players where each player takes a 
 
 1. Execute ```> git clone https://github.com/Romario-Stankovic/ConnectFour``` to clone the repository
 2. Execute ```> gcc Project.c -o Project.out``` to compile the code
-3. Execute ```> ./Project.out``` to run the code
+3. Execute ```> ./Project.out``` to run the executable
 4. Enjoy 🙂
 
 ## ⚖ License
