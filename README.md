@@ -1,4 +1,4 @@
-<h1 style="text-align: center">Connect Four</h1>
+<h1 align="center">Connect Four</h1>
 
 "Connect Four" was given as a final exam project for the "Principles of Computer Programming" course at Singidunum University. The course was designed to teach students about programming fundamentals, memory management and I/O operations. To combine all the knowledge we learned, we were tasked to make a game of [Connect Four](https://en.wikipedia.org/wiki/Connect_Four).
 
