@@ -1,14 +1,16 @@
-<h1 align="center">Connect Four</h1>
+<h1 style="text-align: center">Connect Four</h1>
 
-This project was given as a final exam project for "Principles of Computer Programming" at Singidunum University. The goal of this course was to teach students about programming fundamentals, memory management and I/O operations. To combine all the knowledge we learned, we were tasked to make a game of [Connect Four](https://en.wikipedia.org/wiki/Connect_Four).
+"Connect Four" was given as a final exam project for the "Principles of Computer Programming" course at Singidunum University. The course was designed to teach students about programming fundamentals, memory management and I/O operations. To combine all the knowledge we learned, we were tasked to make a game of [Connect Four](https://en.wikipedia.org/wiki/Connect_Four).
 
-The game had to be fully playable between two players where each player takes a turn to place a checker on the board. Once either player connect four checkers in a row (horizontally, vertically or diagonally) or the board fills up, the game ends and displays the winner. Once the game is over, the players can choose to start over or exit to the main menu. During gameplay, at any point the players can choose to save the game and finish it at a later time.
+The game had to support 2 players, where each player takes turns placing a checker on the board. If either player connect four checkers in a row either horizontally, vertically or diagonally, the game ends and displays the winner. If the board gets filled up with checkers and there is no winning combination, the game ends and no player wins. Once the game is over, the players can choose to start over or exit to the main menu. During gameplay, at any point the players can choose to save the game and finish it at a later time.
+
+In the main menu, the players can choose to preview or load any of the previously saved games. The game supports multiple saved games, and each game is saved as a new line in the result.txt file. The players can preview all saved games, saved games for a particular player, the board of any saved game, or load any of the games to continue playing.
 
 ## 💡 Features
 
 - Main menu
-- Save/Load system
-- Fully playable game between 2 players
+- Save/Load System
+- 2 Player Gameplay
 
 ## 🧰 Languages & Tools
 
@@ -18,13 +20,13 @@ The game had to be fully playable between two players where each player takes a 
 ## 📷 Screenshots
 
 ### Main Menu
-![Main Menu](./.github/images/main_menu.png?raw=true)
+![Main Menu](.github/images/main_menu.png?raw=true)
 
 ### Load Menu
-![Load Menu](./.github/images/load_menu.png?raw=true)
+![Load Menu](.github/images/load_menu.png?raw=true)
 
 ### Gameplay
-![Gameplay](./.github/images/gameplay.gif?raw=true)
+![Gameplay](.github/images/gameplay.gif?raw=true)
 
 ## ⚡ Getting Started
 
@@ -35,8 +37,8 @@ The game had to be fully playable between two players where each player takes a 
 ### 📖 Guide:
 
 1. Download the repository
-2. Execute ```> gcc Project.c -o Project.out``` to compile the code
-3. Execute ```> ./Project.out``` to run the executable
+2. Execute ```> gcc game.c -o game.out``` to compile the code
+3. Execute ```> ./game.out``` to run the game
 4. Enjoy 🙂
 
 ## ⚖ License
